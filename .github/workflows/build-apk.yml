@@ -21,32 +21,30 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y git zip unzip openjdk-17-jdk autoconf automake libtool pkg-config zlib1g-dev libffi-dev libssl-dev build-essential
+          sudo apt-get install -y git zip unzip curl openjdk-17-jdk autoconf automake libtool pkg-config zlib1g-dev libffi-dev libssl-dev build-essential
 
       - name: Install Python build tools
         run: |
           python -m pip install --upgrade pip setuptools wheel
           python -m pip install buildozer cython virtualenv
 
-      - name: Prepare Android SDK for Buildozer
+      - name: Install Android command line tools
         run: |
+          set -e
           SDK_DIR="$HOME/.buildozer/android/platform/android-sdk"
-          mkdir -p "$SDK_DIR/licenses"
+          rm -rf "$SDK_DIR/cmdline-tools" "$SDK_DIR/tools"
+          mkdir -p "$SDK_DIR" /tmp/android-cmdline
+          curl -fsSL -o /tmp/commandlinetools.zip https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
+          unzip -q /tmp/commandlinetools.zip -d /tmp/android-cmdline
           mkdir -p "$SDK_DIR/cmdline-tools"
-          cp -a "$ANDROID_HOME/cmdline-tools" "$SDK_DIR/" || true
-          cp -a "$ANDROID_HOME/platform-tools" "$SDK_DIR/" || true
-          mkdir -p "$SDK_DIR/tools"
-          ln -sfn "$SDK_DIR/cmdline-tools/latest/bin" "$SDK_DIR/tools/bin"
-          cat > "$SDK_DIR/licenses/android-sdk-license" <<'EOF'
-          24333f8a63b6825ea9c5514f83c2829b004d1fee
-          84831b9409646a918e30573bab4c9c91346d8abd
-          d56f5187479451eabf01fb78af6dfcb131a6481e
-          EOF
-          cat > "$SDK_DIR/licenses/android-sdk-preview-license" <<'EOF'
-          84831b9409646a918e30573bab4c9c91346d8abd
-          EOF
-          yes | "$SDK_DIR/tools/bin/sdkmanager" --sdk_root="$SDK_DIR" --licenses || true
-          "$SDK_DIR/tools/bin/sdkmanager" --sdk_root="$SDK_DIR" "platform-tools" "platforms;android-35" "build-tools;35.0.0" || true
+          mv /tmp/android-cmdline/cmdline-tools "$SDK_DIR/cmdline-tools/latest"
+          mkdir -p "$SDK_DIR/tools/bin" "$SDK_DIR/licenses"
+          ln -sf "$SDK_DIR/cmdline-tools/latest/bin/sdkmanager" "$SDK_DIR/tools/bin/sdkmanager"
+          "$SDK_DIR/tools/bin/sdkmanager" --version
+          yes | "$SDK_DIR/tools/bin/sdkmanager" --sdk_root="$SDK_DIR" --licenses > /dev/null || true
+          "$SDK_DIR/tools/bin/sdkmanager" --sdk_root="$SDK_DIR" "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+          test -x "$SDK_DIR/tools/bin/sdkmanager"
+          test -f "$SDK_DIR/build-tools/35.0.0/aidl"
 
       - name: Build debug APK
         run: |
