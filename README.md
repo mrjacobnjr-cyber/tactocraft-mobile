@@ -1,14 +1,36 @@
 # Tactocraft Mobile
 
-Android APK build-ready mobile game project.
+Tactocraft Mobile is a clean Android APK-ready Python/Pygame project.
 
-## Build with GitHub Actions
+## What is included
 
-Actions → Build Tactocraft APK → Run workflow
+- `main.py` - playable mobile game prototype
+- `buildozer.spec` - Android APK build configuration
+- `.github/workflows/build-apk.yml` - GitHub Actions APK builder
+- `scripts/cloudshell_build.sh` - Google Cloud Shell build helper
+- `config/game_settings.json` - project settings
+- `assets/` - placeholder folders for future music, sounds and images
 
-## Build with Cloud Shell
+## Build APK on GitHub
+
+Open the repository, then:
+
+`Actions` -> `Build Tactocraft APK` -> `Run workflow`
+
+When the build is green, download the APK from `Artifacts`.
+
+## Build APK on Google Cloud Shell
 
 ```bash
-chmod +x scripts/cloudshell_build.sh
-./scripts/cloudshell_build.sh
+bash scripts/cloudshell_build.sh
 ```
+
+APK output:
+
+```text
+bin/*.apk
+```
+
+## Local Pydroid test
+
+Open `main.py` in Pydroid 3 and run it.

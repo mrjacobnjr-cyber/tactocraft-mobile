@@ -1,0 +1,9 @@
+{
+  "version": "8.8.8",
+  "graphics": "medium",
+  "language": "auto",
+  "region": "Europe",
+  "music": true,
+  "sfx": true,
+  "safe_fullscreen": true
+}
