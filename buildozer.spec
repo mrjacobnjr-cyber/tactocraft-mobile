@@ -17,6 +17,7 @@ android.ndk_api = 23
 android.archs = arm64-v8a
 android.allow_backup = False
 android.accept_sdk_license = True
+android.build_tools_version = 35.0.0
 
 [buildozer]
 log_level = 2
